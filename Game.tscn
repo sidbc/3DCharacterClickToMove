@@ -1,0 +1,32 @@
+[gd_scene load_steps=4 format=2]
+
+[ext_resource path="res://Player.tscn" type="PackedScene" id=1]
+
+[sub_resource type="BoxShape" id=1]
+
+[sub_resource type="SpatialMaterial" id=2]
+albedo_color = Color( 0.462745, 0.411765, 0.192157, 1 )
+
+[node name="Spatial" type="Spatial"]
+
+[node name="Ground" type="StaticBody" parent="."]
+
+[node name="CollisionShape" type="CollisionShape" parent="Ground"]
+transform = Transform( 50, 0, 0, 0, 0.2, 0, 0, 0, 50, 0, 0, 0 )
+shape = SubResource( 1 )
+
+[node name="CSGBox" type="CSGBox" parent="Ground/CollisionShape"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+material = SubResource( 2 )
+
+[node name="ARVROrigin" type="ARVROrigin" parent="."]
+transform = Transform( 1, 0, 0, 0, 0.387966, 0.921674, 0, -0.921674, 0.387966, -11.564, 59.9488, 37.3018 )
+
+[node name="ARVRCamera" type="ARVRCamera" parent="ARVROrigin"]
+
+[node name="DirectionalLight" type="DirectionalLight" parent="."]
+transform = Transform( 1, 0, 0, 0, -0.00493922, 0.999988, 0, -0.999988, -0.00493922, 0, 33.8021, 0 )
+
+[node name="Player" parent="." instance=ExtResource( 1 )]
+
+[connection signal="input_event" from="Ground" to="Player" method="_on_Ground_input_event"]
