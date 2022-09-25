@@ -1,41 +1,38 @@
 extends KinematicBody
 
-var maxspeed = 800
-var speed = 20
-var movedirection
+export var maxspeed = 800
+export var speed = 20
+export var movedirection = 0.0
 var acceleration = 2200
-var moving = false
-var destination = Vector3()
-var movement = Vector3()
-var position = Vector3(0, 0, 0)
+export var moving = false
+export var destination = Vector3()
+var axis = Vector3(0, -1, 0)
 
 func _physics_process(delta):
-	MovementLoop(delta)
-
-func MovementLoop(delta):
 	if moving == false:
 		speed = 0
 		return
-	else:
-		speed += acceleration * delta
 
+	speed += acceleration * delta
 	if speed > maxspeed:
 		speed = maxspeed
 
-	movement = position.move_toward(destination, delta) * speed
-	movement.y = 0.0
-	movedirection = rad2deg(transform.origin.angle_to(destination)) #angleto doesnt work on 3.2.1
+	var transform_origin = transform.origin
+	var distance_to = transform_origin.distance_to(destination)
 	
-	var distance_to = transform.origin.distance_to(destination)
+	# Magic number 5, I don't know why but smaller number doesn't work???
 	if distance_to > 5:
-		movement = move_and_slide(movement)
+		move_and_slide(destination)
 	else:
 		moving = false
 
-
 func _on_Ground_input_event(camera, event,  new_position, normal, shape_idx):
-	if event.is_action_pressed("ui_click"):
+	if moving == false and event.is_action_pressed("ui_click"):
 		moving = true
 		destination = new_position # here is wherei had the most trouble so far
-#	elif moving == true and event.is_action_pressed("ui_click"):
-#		moving = false
+		movedirection = floor(rad2deg(transform.origin.angle_to(destination)))
+		var curr_rot_y = rotation_degrees.y
+		var rot = rotation_degrees.y + floor(movedirection)
+		rotation_degrees.y = -1 * movedirection
+	elif moving == true and event.is_action_pressed("ui_click"):
+		moving = false
